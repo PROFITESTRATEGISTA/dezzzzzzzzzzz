@@ -1,256 +1,155 @@
-# Dez Saúde Farma
+# YAML <a href="https://www.npmjs.com/package/yaml"><img align="right" src="https://badge.fury.io/js/yaml.svg" title="npm package" /></a>
 
-Aplicação web para gerenciamento de farmácias e telemedicina.
+`yaml` is a definitive library for [YAML](https://yaml.org/), the human friendly data serialization standard.
+This library:
 
-## 🚀 Deploy na VPS
+- Supports both YAML 1.1 and YAML 1.2 and all common data schemas,
+- Passes all of the [yaml-test-suite](https://github.com/yaml/yaml-test-suite) tests,
+- Can accept any string as input without throwing, parsing as much YAML out of it as it can, and
+- Supports parsing, modifying, and writing YAML comments and blank lines.
 
-### Pré-requisitos
-- Node.js 18+
-- Docker e Docker Compose
-- Certbot (para SSL)
+The library is released under the ISC open source license, and the code is [available on GitHub](https://github.com/eemeli/yaml/).
+It has no external dependencies and runs on Node.js as well as modern browsers.
 
-### Deploy Rápido
+For the purposes of versioning, any changes that break any of the documented endpoints or APIs will be considered semver-major breaking changes.
+Undocumented library internals may change between minor versions, and previous APIs may be deprecated (but not removed).
 
-1. **Fazer pull do código:**
-```bash
-cd ~/dezsaudefarma
-git pull origin main
+The minimum supported TypeScript version of the included typings is 3.9;
+for use in earlier versions you may need to set `skipLibCheck: true` in your config.
+This requirement may be updated between minor versions of the library.
+
+For more information, see the project's documentation site: [**eemeli.org/yaml**](https://eemeli.org/yaml/)
+
+To install:
+
+```sh
+npm install yaml
 ```
 
-2. **Executar deploy:**
-```bash
-chmod +x scripts/deploy.sh
-./scripts/deploy.sh
+**Note:** These docs are for `yaml@2`. For v1, see the [v1.10.0 tag](https://github.com/eemeli/yaml/tree/v1.10.0) for the source and [eemeli.org/yaml/v1](https://eemeli.org/yaml/v1/) for the documentation.
+
+The development and maintenance of this library is [sponsored](https://github.com/sponsors/eemeli) by:
+
+<a href="https://www.scipress.io/">
+<img width=150 src="https://eemeli.org/yaml/images/scipress.svg" alt="Scipress" />
+</a>
+
+## API Overview
+
+The API provided by `yaml` has three layers, depending on how deep you need to go: [Parse & Stringify](https://eemeli.org/yaml/#parse-amp-stringify), [Documents](https://eemeli.org/yaml/#documents), and the underlying [Lexer/Parser/Composer](https://eemeli.org/yaml/#parsing-yaml).
+The first has the simplest API and "just works", the second gets you all the bells and whistles supported by the library along with a decent [AST](https://eemeli.org/yaml/#content-nodes), and the third lets you get progressively closer to YAML source, if that's your thing.
+
+A [command-line tool](https://eemeli.org/yaml/#command-line-tool) is also included.
+
+```js
+import { parse, stringify } from 'yaml'
+// or
+import YAML from 'yaml'
+// or
+const YAML = require('yaml')
 ```
 
-3. **Verificar status:**
-```bash
-chmod +x scripts/status.sh
-./scripts/status.sh
+### Parse & Stringify
+
+- [`parse(str, reviver?, options?): value`](https://eemeli.org/yaml/#yaml-parse)
+- [`stringify(value, replacer?, options?): string`](https://eemeli.org/yaml/#yaml-stringify)
+
+### Documents
+
+- [`Document`](https://eemeli.org/yaml/#documents)
+  - [`constructor(value, replacer?, options?)`](https://eemeli.org/yaml/#creating-documents)
+  - [`#anchors`](https://eemeli.org/yaml/#working-with-anchors)
+  - [`#contents`](https://eemeli.org/yaml/#content-nodes)
+  - [`#directives`](https://eemeli.org/yaml/#stream-directives)
+  - [`#errors`](https://eemeli.org/yaml/#errors)
+  - [`#warnings`](https://eemeli.org/yaml/#errors)
+- [`isDocument(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`parseAllDocuments(str, options?): Document[]`](https://eemeli.org/yaml/#parsing-documents)
+- [`parseDocument(str, options?): Document`](https://eemeli.org/yaml/#parsing-documents)
+
+### Content Nodes
+
+- [`isAlias(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isCollection(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isMap(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isNode(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isPair(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isScalar(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`isSeq(foo): boolean`](https://eemeli.org/yaml/#identifying-node-types)
+- [`new Scalar(value)`](https://eemeli.org/yaml/#scalar-values)
+- [`new YAMLMap()`](https://eemeli.org/yaml/#collections)
+- [`new YAMLSeq()`](https://eemeli.org/yaml/#collections)
+- [`doc.createAlias(node, name?): Alias`](https://eemeli.org/yaml/#working-with-anchors)
+- [`doc.createNode(value, options?): Node`](https://eemeli.org/yaml/#creating-nodes)
+- [`doc.createPair(key, value): Pair`](https://eemeli.org/yaml/#creating-nodes)
+- [`visit(node, visitor)`](https://eemeli.org/yaml/#finding-and-modifying-nodes)
+
+### Parsing YAML
+
+- [`new Lexer().lex(src)`](https://eemeli.org/yaml/#lexer)
+- [`new Parser(onNewLine?).parse(src)`](https://eemeli.org/yaml/#parser)
+- [`new Composer(options?).compose(tokens)`](https://eemeli.org/yaml/#composer)
+
+## YAML.parse
+
+```yaml
+# file.yml
+YAML:
+  - A human-readable data serialization language
+  - https://en.wikipedia.org/wiki/YAML
+yaml:
+  - A complete JavaScript implementation
+  - https://www.npmjs.com/package/yaml
 ```
 
-### Comandos Úteis
+```js
+import fs from 'fs'
+import YAML from 'yaml'
 
-```bash
-# Ver logs
-docker-compose logs nginx
+YAML.parse('3.14159')
+// 3.14159
 
-# Reiniciar
-docker-compose restart
+YAML.parse('[ true, false, maybe, null ]\n')
+// [ true, false, 'maybe', null ]
 
-# Parar
-docker-compose down
-
-# Status dos containers
-docker ps
-
-# Verificar conectividade
-curl -I http://dezsaudefarma.com.br
+const file = fs.readFileSync('./file.yml', 'utf8')
+YAML.parse(file)
+// { YAML:
+//   [ 'A human-readable data serialization language',
+//     'https://en.wikipedia.org/wiki/YAML' ],
+//   yaml:
+//   [ 'A complete JavaScript implementation',
+//     'https://www.npmjs.com/package/yaml' ] }
 ```
 
-## 🔧 Configuração
+## YAML.stringify
 
-### SSL/Certificados
-- Usa o certificado do Certbot: `/etc/letsencrypt/live/dezsaudefarma.com.br/`
-- HTTP redireciona para HTTPS (padrão recomendado)
-- Certificado válido por 89 dias (renovação automática)
+```js
+import YAML from 'yaml'
 
-### Nginx
-- Configurado para servir a aplicação React
-- Headers de segurança configurados
-- Cache para arquivos estáticos
-- Health check em `/health`
+YAML.stringify(3.14159)
+// '3.14159\n'
 
-### Docker
-- Container Nginx Alpine
-- Portas 80 (HTTP) e 443 (HTTPS)
-- Volumes mapeados para configurações e build
+YAML.stringify([true, false, 'maybe', null])
+// `- true
+// - false
+// - maybe
+// - null
+// `
 
-## 📊 Monitoramento
-
-### RD Station
-- Script de monitoramento integrado no `index.html`
-- Hook personalizado `useRDStation` para eventos
-- Tracking de conversões e page views
-
-### Logs
-- Logs de acesso: `/var/log/nginx/dezsaudefarma.com.br.access.log`
-- Logs de erro: `/var/log/nginx/dezsaudefarma.com.br.error.log`
-
-## 🌐 URLs
-
-- **HTTP:** http://dezsaudefarma.com.br (redireciona para HTTPS)
-- **HTTPS:** https://dezsaudefarma.com.br
-
-## 🔍 Troubleshooting
-
-### Problemas Comuns
-
-1. **Porta 80 em uso:**
-```bash
-sudo fuser -k 80/tcp
-sudo systemctl stop nginx
+YAML.stringify({ number: 3, plain: 'string', block: 'two\nlines\n' })
+// `number: 3
+// plain: string
+// block: |
+//   two
+//   lines
+// `
 ```
-
-2. **Container não inicia:**
-```bash
-docker-compose logs nginx
-docker-compose down && docker-compose up -d
-```
-
-3. **Certificado não encontrado:**
-```bash
-sudo certbot certificates
-sudo certbot install --cert-name dezsaudefarma.com.br-0001
-```
-
-4. **Build falha:**
-```bash
-npm install
-npm run build
-```
-
-### Verificação Completa
-```bash
-./scripts/status.sh
-```
-
-## 📝 Estrutura do Projeto
-
-```
-dezsaudefarma/
-├── src/                    # Código fonte React
-├── nginx/                  # Configurações Nginx
-│   ├── conf.d/            # Configurações de sites
-│   ├── ssl/               # Certificados SSL
-│   └── logs/              # Logs do Nginx
-├── scripts/               # Scripts de deploy
-├── dist/                  # Build da aplicação
-├── docker-compose.yml     # Configuração Docker
-└── package.json           # Dependências Node.js
-```
-
-## 🔄 Atualizações
-
-Para atualizar a aplicação:
-
-1. Fazer pull das mudanças
-2. Executar o script de deploy
-3. Verificar o status
-
-```bash
-git pull origin main
-./scripts/deploy.sh
-./scripts/status.sh
-```
-
-# DezSaude Farma - Configuração Super Simples
-
-## 🎯 **Configuração Super Simples - APENAS HTTP**
-
-Sistema configurado para funcionar **apenas com HTTP** na porta 80, sem SSL, sem certificados, sem complexidade.
-
-### ✅ **Como Funciona:**
-
-- **HTTP**: `http://dezsaudefarma.com.br` → Aplicação React
-- **Qualquer domínio**: → Redireciona para HTTP
-- **Sem HTTPS**: Configuração máxima simplicidade
-
-### 🚀 **Deploy Super Rápido (VPS):**
-
-```bash
-# 1. Clonar e entrar no projeto
-git clone https://github.com/DaniloDeivson/dezsaudefarma.git
-cd dezsaudefarma
-
-# 2. Executar configuração automática
-bash scripts/setup-simple-http.sh
-
-# 3. Se houver problemas, usar emergência
-bash scripts/emergency-fix.sh
-```
-
-### 🔧 **Estrutura Super Simples:**
-
-```
-dezsaudefarma/
-├── docker-compose.yml          # Apenas porta 80
-├── nginx/
-│   ├── nginx.conf             # Configuração básica
-│   ├── conf.d/
-│   │   ├── dezsaudefarma.com.br.conf  # Apenas HTTP
-│   │   └── default.conf       # Redireciona tudo
-│   └── html/                  # Aplicação React
-└── scripts/
-    ├── setup-simple-http.sh   # Configuração automática
-    └── emergency-fix.sh       # Correção de emergência
-```
-
-### 🌐 **Configuração de Rede:**
-
-```nginx
-# HTTP - Aplicação principal
-server {
-    listen 80;
-    server_name dezsaudefarma.com.br www.dezsaudefarma.com.br;
-    # Serve aplicação React
-}
-
-# Default - Redireciona tudo
-server {
-    listen 80 default_server;
-    # return 301 http://dezsaudefarma.com.br$request_uri;
-}
-```
-
-### 🧪 **Testes:**
-
-```bash
-# Testar HTTP
-curl http://localhost/health
-curl http://dezsaudefarma.com.br
-
-# Ver logs
-docker-compose logs -f nginx
-```
-
-### 🔍 **Troubleshooting:**
-
-```bash
-# Se não funcionar, execute:
-bash scripts/emergency-fix.sh
-
-# Verificar status
-docker ps
-docker-compose logs nginx
-
-# Reiniciar
-docker-compose restart
-```
-
-### 📊 **Status:**
-
-- ✅ **HTTP**: Funcionando na porta 80
-- ❌ **HTTPS**: Desabilitado (sem SSL)
-- ✅ **Certificados**: Não necessários
-- ✅ **Docker**: Apenas Nginx Alpine
-- ✅ **Simplicidade**: Máxima
-
-### 🎯 **Resultado:**
-
-- **Apenas HTTP** → `http://dezsaudefarma.com.br`
-- **Aplicação React** carrega normalmente
-- **Sem complexidade** de SSL/HTTPS
-- **Fácil manutenção** e debug
-- **Sem loops de restart**
-
-### 🚨 **Para HTTPS no Futuro:**
-
-- Configure no seu provedor de hospedagem
-- Ou use um proxy reverso externo
-- Ou configure no DNS
-- Ou use Cloudflare/CloudFront
 
 ---
 
-**Status**: ✅ **Configuração Super Simples - APENAS HTTP** 
+Browser testing provided by:
+
+<a href="https://www.browserstack.com/open-source">
+<img width=200 src="https://eemeli.org/yaml/images/browserstack.svg" alt="BrowserStack" />
+</a>
