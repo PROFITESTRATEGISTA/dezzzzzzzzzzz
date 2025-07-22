@@ -1,0 +1,33 @@
+# Robots.txt para Dez Saúde - Emergências Médicas
+User-agent: *
+Allow: /
+
+# Sitemap principal
+Sitemap: https://dezsaudefarma.com.br/sitemap.xml
+
+# Sitemap de imagens
+Sitemap: https://dezsaudefarma.com.br/sitemap-images.xml
+
+# Páginas importantes para crawling
+Allow: /
+Allow: /farmacias
+Allow: /contratar
+
+# Bloquear páginas administrativas
+Disallow: /admin
+Disallow: /api/
+
+# Permitir crawling de imagens
+User-agent: Googlebot-Image
+Allow: /
+
+# Configurações específicas para Bing
+User-agent: bingbot
+Crawl-delay: 1
+
+# Configurações para outros bots
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Página Principal -->
+  <url>
+    <loc>https://dezsaudefarma.com.br/</loc>
+    <image:image>
+      <image:loc>https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg</image:loc>
+      <image:title>Equipe médica Dez Saúde - Atendimento 24h São Paulo</image:title>
+      <image:caption>Médico e enfermeira do Plano Dez Saúde atendendo emergência médica em São Paulo</image:caption>
+      <image:geo_location>São Paulo, SP, Brasil</image:geo_location>
+      <image:license>https://dezsaudefarma.com.br/licenca-imagens</image:license>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://i.postimg.cc/3JVtpyBz/image-1.png</image:loc>
+      <image:title>Logo Dez Saúde - Emergências Médicas São Paulo</image:title>
+      <image:caption>Logotipo oficial do Plano Dez Saúde para emergências médicas 24h</image:caption>
+      <image:geo_location>São Paulo, SP, Brasil</image:geo_location>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://i.postimg.cc/Px3ncGZ9/drogalest.png</image:loc>
+      <image:title>Logo Droga Leste - Parceira Dez Saúde São Paulo</image:title>
+      <image:caption>Logotipo da rede Droga Leste, parceira oficial do Plano Dez Saúde</image:caption>
+      <image:geo_location>São Paulo, SP, Brasil</image:geo_location>
+    </image:image>
+  </url>
+  
+  <!-- Página de Farmácias -->
+  <url>
+    <loc>https://dezsaudefarma.com.br/farmacias</loc>
+    <image:image>
+      <image:loc>https://images.pexels.com/photos/4386466/pexels-photo-4386466.jpeg</image:loc>
+      <image:title>Farmácia Droga Leste - Parceira Dez Saúde São Paulo</image:title>
+      <image:caption>Farmácia Droga Leste parceira do Plano Dez Saúde em São Paulo</image:caption>
+      <image:geo_location>São Paulo, SP, Brasil</image:geo_location>
+      <image:license>https://dezsaudefarma.com.br/licenca-imagens</image:license>
+    </image:image>
+  </url>
+  
+  <!-- Página de Contratação -->
+  <url>
+    <loc>https://dezsaudefarma.com.br/contratar</loc>
+    <image:image>
+      <image:loc>https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg</image:loc>
+      <image:title>Ambulância Dez Saúde - Emergências São Paulo</image:title>
+      <image:caption>Ambulância do Plano Dez Saúde atendendo emergência em São Paulo</image:caption>
+      <image:geo_location>São Paulo, SP, Brasil</image:geo_location>
+      <image:license>https://dezsaudefarma.com.br/licenca-imagens</image:license>
+    </image:image>
+  </url>
+  
+</urlset>

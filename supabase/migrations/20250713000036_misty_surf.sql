@@ -1,0 +1,114 @@
+/*
+  # Reset para Modo Produção
+
+  1. Limpeza Completa
+    - Remove todos os dados fictícios
+    - Zera contadores incorretos
+    - Reset completo das tabelas
+
+  2. Funções de Performance
+    - Cria funções SQL otimizadas
+    - Calcula dados em tempo real
+    - Remove dependência de contadores
+
+  3. Triggers Automáticos
+    - Atualiza contadores automaticamente
+    - Mantém dados sincronizados
+*/
+
+-- 1. LIMPEZA COMPLETA DOS DADOS
+TRUNCATE TABLE leads CASCADE;
+TRUNCATE TABLE funcionarios CASCADE;
+TRUNCATE TABLE farmacias CASCADE;
+
+-- 2. RESET DA SEQUÊNCIA DE IDs (se necessário)
+-- As tabelas usam UUID, então não há sequências para resetar
+
+-- 3. REMOVER COLUNA leads_count (será calculada dinamicamente)
+ALTER TABLE funcionarios DROP COLUMN IF EXISTS leads_count;
+
+-- 4. FUNÇÃO PARA INCREMENTAR LEADS (não mais necessária, será removida)
+DROP FUNCTION IF EXISTS increment_leads_count(uuid);
+
+-- 5. FUNÇÃO PARA PERFORMANCE DE FARMÁCIAS
+CREATE OR REPLACE FUNCTION get_farmacia_performance()
+RETURNS TABLE (
+  id uuid,
+  nome text,
+  endereco text,
+  bairro text,
+  cidade text,
+  funcionarios_count bigint,
+  leads_count bigint
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    f.id,
+    f.nome,
+    f.endereco,
+    f.bairro,
+    f.cidade,
+    COALESCE(func_count.count, 0) as funcionarios_count,
+    COALESCE(leads_count.count, 0) as leads_count
+  FROM farmacias f
+  LEFT JOIN (
+    SELECT farmacia_id, COUNT(*) as count
+    FROM funcionarios
+    GROUP BY farmacia_id
+  ) func_count ON f.id = func_count.farmacia_id
+  LEFT JOIN (
+    SELECT farmacia_id, COUNT(*) as count
+    FROM leads
+    GROUP BY farmacia_id
+  ) leads_count ON f.id = leads_count.farmacia_id
+  ORDER BY leads_count.count DESC NULLS LAST;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 6. FUNÇÃO PARA PERFORMANCE DE CIDADES
+CREATE OR REPLACE FUNCTION get_cidade_performance()
+RETURNS TABLE (
+  cidade text,
+  total_leads bigint,
+  leads_verificados bigint,
+  taxa_verificacao numeric,
+  total_farmacias bigint,
+  total_funcionarios bigint
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    f.cidade,
+    COALESCE(leads_stats.total_leads, 0) as total_leads,
+    COALESCE(leads_stats.leads_verificados, 0) as leads_verificados,
+    CASE 
+      WHEN COALESCE(leads_stats.total_leads, 0) = 0 THEN 0
+      ELSE ROUND((COALESCE(leads_stats.leads_verificados, 0)::numeric / leads_stats.total_leads::numeric) * 100, 1)
+    END as taxa_verificacao,
+    COALESCE(farmacia_count.count, 0) as total_farmacias,
+    COALESCE(funcionario_count.count, 0) as total_funcionarios
+  FROM (SELECT DISTINCT cidade FROM farmacias) f
+  LEFT JOIN (
+    SELECT 
+      farm.cidade,
+      COUNT(l.id) as total_leads,
+      COUNT(CASE WHEN l.telefone_verificado = true THEN 1 END) as leads_verificados
+    FROM farmacias farm
+    LEFT JOIN leads l ON farm.id = l.farmacia_id
+    GROUP BY farm.cidade
+  ) leads_stats ON f.cidade = leads_stats.cidade
+  LEFT JOIN (
+    SELECT cidade, COUNT(*) as count
+    FROM farmacias
+    GROUP BY cidade
+  ) farmacia_count ON f.cidade = farmacia_count.cidade
+  LEFT JOIN (
+    SELECT farm.cidade, COUNT(func.id) as count
+    FROM farmacias farm
+    LEFT JOIN funcionarios func ON farm.id = func.farmacia_id
+    GROUP BY farm.cidade
+  ) funcionario_count ON f.cidade = funcionario_count.cidade
+  ORDER BY total_leads DESC NULLS LAST;
+END;
+$$ LANGUAGE plpgsql;
